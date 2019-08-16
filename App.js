@@ -1,15 +1,21 @@
 import React, { Component } from 'react';
 import { StyleSheet, AsyncStorage, Text, View, YellowBox } from 'react-native';
 import * as Font from 'expo-font';
-import * as firebase from 'firebase'
+import { createStackNavigator, createAppContainer } from 'react-navigation';
+
+
+import DB from './DB';
 
 import Home from './src/screens/Home';
 import Login from './src/screens/Login';
-import DB from './DB';
+import Register from './src/screens/Register';
+import Privacy from './src/screens/Privacy';
+import Ratings from './src/screens/Ratings';
 
-YellowBox.ignoreWarnings(['Setting a timer', 'Warning:']);
 
-export default class App extends Component {
+// YellowBox.ignoreWarnings(['Setting a timer', 'Warning:']);
+
+class App extends Component {
 
   state = {
     user: null,
@@ -17,25 +23,19 @@ export default class App extends Component {
   }
 
   async componentDidMount() {
-    console.log(DB);
     await Font.loadAsync({
       Roboto_medium: require("./node_modules/native-base/Fonts/Roboto_medium.ttf")
     });
     let usr = await AsyncStorage.getItem('user');
-    this.setState({ fontLoaded: true, user: usr });
-  }
-
-  async renderItem() {
-    return <Login />
+    this.setState({ fontLoaded: true, });
+    this.props.navigation.replace('Login');
   }
 
   render() {
-
     return (
-      this.state.fontLoaded ? this.state.user != null ? <Home /> : <Login /> : null
+      this.state.fontLoaded ? <View /> : null
     );
   }
-
 
 }
 
@@ -47,3 +47,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+const Navigator = createStackNavigator({
+  App,
+  Login,
+  Register,
+  Home,
+  Privacy,
+  Ratings,
+}, {
+    headerMode: 'none',
+  })
+export default createAppContainer(Navigator)

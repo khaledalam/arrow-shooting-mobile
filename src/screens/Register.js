@@ -1,9 +1,8 @@
 import React from 'react';
 import { TouchableOpacity, KeyboardAvoidingView, ScrollView, View } from 'react-native';
 import { Container, Content, Text, Input, Form, Toast, DatePicker, Root, } from 'native-base';
-import { createStackNavigator, createAppContainer } from 'react-navigation';
+import { NavigationActions, StackActions } from 'react-navigation';
 // import DeviceInfo from 'react-native-device-info';
-
 
 import * as firebase from 'firebase'
 require('firebase/firestore')
@@ -79,21 +78,29 @@ export default class Register extends React.Component {
         })
     }
 
+    goTo = (NavName) => {
+        const resetAction = StackActions.reset({
+            index: 0,
+            actions: [
+                NavigationActions.navigate({ routeName: NavName })
+            ]
+        })
+        this.props.navigation.dispatch(resetAction)
+    }
+
     render() {
         return (
             <Root>
                 <Container style={{ backgroundColor: 'white' }}>
-                    <Header title='SIGN UP' backgroundColor='#4f373f' color='white' backArrow={true} btn={() => {
-                        this.props.navigation.goBack()
-                    }} />
-                    <ScrollView style={{ flex: 1, backgroundColor: 'red' }}>
+                    <Header title='SIGN UP' backgroundColor='#c767ac' color='white' backArrow={true} btn={() => this.goTo('Login')} />
+                    <ScrollView style={{ flex: 1, backgroundColor: 'gray' }}>
                         <KeyboardAvoidingView behavior='padding' contentContainerStyle={{ flex: 1 }}>
                             <Form style={{ marginTop: 60, width: '100%', }}>
                                 <Input placeholder='Name' placeholderTextColor='#E3E6EE' style={AppStyle.input} onChangeText={name => this.setState({ name })} value={this.state.name} />
                                 <Input placeholder='Email' placeholderTextColor='#E3E6EE' style={AppStyle.input} onChangeText={email => this.setState({ email })} value={this.state.email} />
                                 <Input placeholder='Password' placeholderTextColor='#E3E6EE' secureTextEntry style={AppStyle.input} onChangeText={password => this.setState({ password })} value={this.state.password} />
                                 <Input placeholder='Confirm Password' placeholderTextColor='#E3E6EE' secureTextEntry style={AppStyle.input} onChangeText={confirmPassword => this.setState({ confirmPassword })} value={this.state.confirmPassword} />
-                                
+
                                 {/* <Text style={AppStyle.input}>Country: {this.state.country} </Text> */}
 
                                 <TouchableOpacity style={{ width: '90%', height: 52, alignItems: 'center', justifyContent: 'center', backgroundColor: '#2A2E43', borderRadius: 10, alignSelf: 'center', marginTop: 30 }} onPress={this.handleRegister}>

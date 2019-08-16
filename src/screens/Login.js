@@ -1,33 +1,33 @@
-import React from 'react';
-import { TouchableOpacity, View, Image, AppRegistry, Linking } from 'react-native';
-import { createStackNavigator, createAppContainer } from 'react-navigation'
+import React, { Component } from 'react';
+import { TouchableOpacity, View, Image, Linking } from 'react-native';
 import { Container, Content, Text, Input, Form, } from 'native-base';
 import Toast, { DURATION } from 'react-native-easy-toast';
 import * as firebase from 'firebase'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { SocialIcon } from 'react-native-elements'
-
+import { NavigationActions, StackActions } from 'react-navigation';
 
 import Header from '../components/Header';
-import Register from './Register';
-import Ratings from './Ratings';
-import Home from './Home';
-import logo from '../../assets/images/logo.jpg';
+import logo from '../../assets/images/logo.png';
 import AppStyle from '../../assets/styles/App';
 
-class Login extends React.Component {
+export default class Login extends Component {
     state = {
         email: '',
         password: '',
     }
-    handleRegister = () => {
-        Toast.toastInstance = null;
-        return this.props.navigation.navigate('Register')
-    }
     handleLogin = () => {
         const { email, password } = this.state
         return firebase.auth().signInWithEmailAndPassword(email, password).then(() => {
-            this.props.navigation.replace('Home')
+
+            const resetAction = StackActions.reset({
+                index: 0,
+                actions: [
+                    NavigationActions.navigate({ routeName: 'Home' })
+                ]
+            })
+            this.props.navigation.dispatch(resetAction);
+
         }).catch(err => {
             console.log(err);
             this.refs.toast.show(err.toString(), 1000, () => {
@@ -35,6 +35,17 @@ class Login extends React.Component {
             });
         })
     }
+
+    goTo = (NavName) => {
+        const resetAction = StackActions.reset({
+            index: 0,
+            actions: [
+                NavigationActions.navigate({ routeName: NavName })
+            ]
+        })
+        this.props.navigation.dispatch(resetAction)
+    }
+
     render() {
         const facebook = 'https://www.facebook.com/Arrow-Shooting-110792546945764';
 
@@ -42,8 +53,8 @@ class Login extends React.Component {
             <Container style={{ backgroundColor: '#c767ac' }}>
                 <Header title='LOGIN' backgroundColor='white' color='#2A2E43' backArrow={false} />
                 <Content>
-                    <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 40 }}>
-                        <Image source={logo} style={{ width: 200, height: 200 }} />
+                    <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 5 }}>
+                        <Image source={logo} style={{ width: 230, height: 230 }} />
                     </View>
                     <Form style={{ width: '100%', marginTop: 15, marginBottom: 20, }}>
                         <Input placeholder='Email' placeholderTextColor='#E3E6EE' keyboardType='email-address' style={AppStyle.input}
@@ -58,10 +69,10 @@ class Login extends React.Component {
                             </TouchableOpacity>
                         </View>
                     </Form>
-                    <Text style={AppStyle.textRegister} onPress={() => this.handleRegister}>──────  Register  ──────</Text>
+                    <Text style={AppStyle.textRegister} onPress={() => {Toast.toastInstance = null; this.goTo('Register')}}>──────  Register  ──────</Text>
                     <View style={{ flexDirection: 'row', alignSelf: 'center', }} >
-                        <Text style={AppStyle.textRegister} onPress={() => this.props.navigation.replace('Ratings')}><Ionicons name='ios-medal' size={20} color='gold' /> Ratings</Text>
-                        <Text style={AppStyle.textRegister} onPress={() => this.handleRegister}>Privicy Policy</Text>
+                        <Text style={AppStyle.textRegister} onPress={() => this.goTo('Ratings')}><Ionicons name='ios-medal' size={20} color='gold' /> Ratings</Text>
+                        <Text style={AppStyle.textRegister} onPress={() => this.goTo('Privacy')}><Ionicons name='ios-paper' size={20} color='black' /> Privacy Policy</Text>
                         <SocialIcon
                             type='facebook'
                             iconSize={20}
@@ -82,13 +93,3 @@ class Login extends React.Component {
         );
     }
 }
-
-const Navigator = createStackNavigator({
-    Home,
-    Register,
-    Login,
-    Ratings,
-}, {
-        headerMode: 'none'
-    })
-export default createAppContainer(Navigator)

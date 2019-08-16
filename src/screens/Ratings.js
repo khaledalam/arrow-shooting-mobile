@@ -5,40 +5,49 @@ import { Container, Content, Row, Text, Col } from 'native-base';
 import Header from '../components/Header';
 import { createStackNavigator, createAppContainer } from 'react-navigation';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { NavigationActions, StackActions } from 'react-navigation';
+
 
 export default class Ratings extends Component {
     state = {
-        data: [],
+        data: null,
         user: null,
     }
     componentDidMount() {
-        // let user=firebase.auth().currentUser.email
-        let ref = firebase.firestore().collection('Users')
-        ref.orderBy('score').limit(50)
+        let ref = firebase.firestore().collection('Users').limit(50)
         ref.get().then(snap => {
             let data = []
             snap.forEach(doc => {
                 data.push(doc.data())
             });
-            console.log(data);
+            data.sort((b, a) => a['highScore'] - b['highScore'] || a['highHitsOk'] - b['highHitsOk'] || a['games'] - b['games']);
             this.setState({ data: data, });
         });
-
     }
 
     getColor = (num) => {
         if (num == 0) return 'gold';
         if (num == 1) return 'silver';
-        if (num == 2) return 'bronze';
+        if (num == 2) return '#cd7f32';
         return 'blue';
+    }
+
+    goTo = (NavName) => {
+        const resetAction = StackActions.reset({
+            index: 0,
+            actions: [
+                NavigationActions.navigate({ routeName: NavName })
+            ]
+        })
+        this.props.navigation.dispatch(resetAction)
     }
 
     render() {
         return (
             <Container>
-                <Header title='Ratings' backgroundColor='#4f373f' color='white' backArrow={true} btn={() => this.props.navigation.goBack()} />
+                <Header title='Ratings' backgroundColor='#c767ac' color='white' backArrow={true} btn={() => this.goTo('Login')} />
                 <Content style={{ marginTop: 25 }}>
-                    {this.state.data == null ? <Text>Empty</Text> : this.state.data.map((item, i) => {
+                {this.state.data == null ? <Text>N/a, check internet connection!</Text> : this.state.data.map((item, i) => {
                         let color = this.getColor(i);
                         return <Row key={i} style={{ padding: 5, marginBottom: 15, borderWidth: 3, borderColor: (color), marginRight: 3, marginLeft: 3 }} >
                             <Col size={5} />
@@ -59,4 +68,3 @@ export default class Ratings extends Component {
         );
     }
 }
-

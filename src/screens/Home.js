@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
 import { Text, View, Dimensions, Alert, TouchableOpacity, } from 'react-native';
-
-import { createStackNavigator, createAppContainer } from 'react-navigation'
 import * as firebase from 'firebase'
+import { NavigationActions, StackActions } from 'react-navigation';
 require('firebase/firestore')
 import { Container, Button, Right, Row, Icon } from 'native-base';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Svg, { Line, Circle } from 'react-native-svg';
 
-import Ratings from './Ratings';
 
 const rateHitDistance = 20;
 
-class Home extends Component {
+export default class Home extends Component {
 
     state = {
         user: null,
@@ -34,9 +32,7 @@ class Home extends Component {
         enableButtons: true,
     }
 
-
     async componentWillMount() {
-
         let { R_from, R_to, Angle, Point_from, Point_to, PointDot, rateRunSpeed, } = this.state;
         let W = Math.round(Dimensions.get('window').width) || '100%';
         let H = Math.round(Dimensions.get('window').height) || '100%';
@@ -48,7 +44,7 @@ class Home extends Component {
         Point_from = [R_from * Math.cos(Angle), R_from * Math.sin(Angle)];
         Point_to = [R_to * Math.cos(Angle), R_to * Math.sin(Angle)];
         PointDot = [0.5 * H * Math.cos(Angle), 0.5 * H * Math.sin(Angle)];
-
+        
         this.setState({ W, H, R_from, R_to, Angle, Point_from, Point_to, PointDot, rateRunSpeed, }, () => this.forceUpdate());
 
         await firebase.firestore().collection('Settings').doc('clock').get().then((doc) => {
@@ -57,6 +53,16 @@ class Home extends Component {
             this.handleClock();
             this.setState({ gameSeconds: gameSeconds, enableButtons: false, clock: gameSeconds, user: user });
         });
+    }
+
+    goTo = (NavName) => {
+        const resetAction = StackActions.reset({
+            index: 0,
+            actions: [
+                NavigationActions.navigate({ routeName: NavName })
+            ]
+        })
+        this.props.navigation.dispatch(resetAction)
     }
 
     handleClock = () => {
@@ -89,7 +95,11 @@ class Home extends Component {
             Alert.alert("Timeout!", "Score: " + score.toFixed(2) + "\n\nHits: " + hitsOk + "\n\nFail: " + hitsFail,
                 [
                     { text: 'Play Again', onPress: () => { this.generateDot(); this.init(true); this.handleClock() } },
-                    { text: 'Show Ratings', onPress: () => { this.props.navigation.replace('Ratings') } },
+                    {
+                        text: 'Logout', onPress: () => {
+                            firebase.auth().signOut(); this.goTo('Login')
+                        }
+                    },
                 ], { cancelable: false });
 
             clock = gameSeconds;
@@ -291,10 +301,3 @@ class Home extends Component {
     }
 
 }
-
-const Navigator = createStackNavigator({
-    Home,
-}, {
-        headerMode: 'none'
-    })
-export default createAppContainer(Navigator)
