@@ -27,6 +27,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "net.khaledalam.arrowshooting"
     }
   }
 }
