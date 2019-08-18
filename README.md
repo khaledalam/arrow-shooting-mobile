@@ -4,6 +4,8 @@ Mobile Game using JavaScript, React Native, Firebase and various Trigonometry an
 
 Website: http://arrowshooting.khaledalam.net
 
+App on Expo: https://expo.io/@ninjo/Arrow-Shooting
+
 <p align="center">
 <img src="screenshots/Feature.jpg" width="500">
 
