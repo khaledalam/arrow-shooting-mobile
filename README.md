@@ -2,6 +2,8 @@
 
 Mobile Game using JavaScript, React Native, Firebase and various Trigonometry and Geometry Algorithms.
 
+App on Google Play: https://play.google.com/store/apps/details?id=net.khaledalam.arrowshooting
+
 Website: http://arrowshooting.khaledalam.net
 
 App on Expo: https://expo.io/@ninjo/Arrow-Shooting
